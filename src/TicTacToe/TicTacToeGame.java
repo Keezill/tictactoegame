@@ -19,11 +19,16 @@ public class TicTacToeGame {
 
     public static void main(String[] args) {
         printGameRules();
+        if (new Random().nextBoolean()) {
+            makeComputerProgress();
+            printGameTable();
+        }
         while (true) {
             int number = readUserInput();
             makeUserProgress(number);
             if (isWinner(USER)) {
                 System.out.println("YOU WIN!");
+                break;
             }
             if (isDraw()) {
                 System.out.println("SORRY, DRAW!");
@@ -31,8 +36,9 @@ public class TicTacToeGame {
             }
             makeComputerProgress();
             printGameTable();
-            if (isWinner(USER)) {
-                System.out.println("YOU WIN!");
+            if (isWinner(COMPUTER)) {
+                System.out.println("COMPUTER WIN!");
+                break;
             }
             if (isDraw()) {
                 System.out.println("SORRY, DRAW!");
@@ -43,6 +49,7 @@ public class TicTacToeGame {
         printGameTable();
         System.out.println("GAME OVER!");
     }
+
 
     private static void printGameRules() {
         System.out.println("RULES FOR TIC-TAC-TOE");
@@ -96,7 +103,6 @@ public class TicTacToeGame {
                     } else {
                         System.out.println("Cell with number " + number + " is not free!");
                     }
-                    makeUserProgress(number);
                 }
             }
         }
@@ -153,26 +159,61 @@ public class TicTacToeGame {
             }
 
          */
-        var indexes = toIndexes(number);
-        GAME_TABLE[indexes[0]][indexes[1]] = USER;
+            makeProgress(number, USER);
+
     }
 
     private static void makeComputerProgress() {
         while (true) {
             int number = new Random().nextInt(9) + 1;
             if (isCellFree(number)) {
-                var indexes = toIndexes(number);
-                GAME_TABLE[indexes[0]][indexes[1]] = COMPUTER;
+                makeProgress(number, COMPUTER);
                 break;
             }
         }
     }
 
+    private static void makeProgress(int number, char computer) {
+        var indexes = toIndexes(number);
+        GAME_TABLE[indexes[0]][indexes[1]] = computer;
+    }
+
     private static boolean isWinner(char ch) {
-        return false;
+        for (int i = 0; i < 3; i++) {
+            if (GAME_TABLE[i][0] == GAME_TABLE[i][1] &&
+                    GAME_TABLE[i][1] == GAME_TABLE[i][2] &&
+                    GAME_TABLE[i][1] == ch) {
+                return true;
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            if (GAME_TABLE[0][i] == GAME_TABLE[1][i] &&
+                    GAME_TABLE[1][i] == GAME_TABLE[2][i] &&
+                    GAME_TABLE[1][i] == ch) {
+                return true;
+            }
+        }
+        if (GAME_TABLE[0][0] == GAME_TABLE[1][1] &&
+                GAME_TABLE[1][1] == GAME_TABLE[2][2] &&
+                GAME_TABLE[1][1] == ch) {
+            return true;
+        } else if (GAME_TABLE[2][0] == GAME_TABLE[1][1] &&
+                GAME_TABLE[1][1] == GAME_TABLE[0][2] &&
+                GAME_TABLE[1][1] == ch) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static boolean isDraw() {
-        return false;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (GAME_TABLE[i][j] == EMPTY) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
