@@ -132,7 +132,7 @@ public class TicTacToeMyGame {
         }
 
         // check if COMPUTER winning
-        //if you can't win, try to prevent USER from winning
+        //if COMPUTER can't win, try to prevent USER from winning
 
         if (!choiceMade) {
             bestMove = checkCanItWin(USER);
