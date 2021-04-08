@@ -14,8 +14,6 @@ public class TicTacToeMyGame {
             {EMPTY, EMPTY, EMPTY},
             {EMPTY, EMPTY, EMPTY},
             {EMPTY, EMPTY, EMPTY}
-            //разбить длинные функции на несколько маленьких
-            //мэйккомппрогресс упростить
     };
 
     public static void main(String[] args) {
@@ -84,8 +82,6 @@ public class TicTacToeMyGame {
     }
 
     private static boolean checkWinner(char ch) {
-        //вынести проверку для диагоналей, строк и колон в отдельные методы
-
         for (int i = 0; i < 3; i++) {
             if (BOARD[i][0] == BOARD[i][1] &&
                     BOARD[i][1] == BOARD[i][2] &&
@@ -125,7 +121,6 @@ public class TicTacToeMyGame {
     }
 
     private static void makeComputerProgress() {
-        //сделать функцию чтобы комп пытался победить, а не просто рандомно ставил и рандом оставить
         int[] bestMove = checkCanItWin(COMPUTER);
         if (bestMove[0] != -1) {
             BOARD[bestMove[0]][bestMove[1]] = COMPUTER;
