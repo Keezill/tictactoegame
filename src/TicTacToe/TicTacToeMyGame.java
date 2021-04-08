@@ -10,10 +10,12 @@ public class TicTacToeMyGame {
 
     private static final char COMPUTER = '0';
 
-    private static final char[][] board = {
+    private static final char[][] BOARD = {
             {EMPTY, EMPTY, EMPTY},
             {EMPTY, EMPTY, EMPTY},
             {EMPTY, EMPTY, EMPTY}
+            //разбить длинные функции на несколько маленьких
+            //мэйккомппрогресс упростить
     };
 
     public static void main(String[] args) {
@@ -82,27 +84,29 @@ public class TicTacToeMyGame {
     }
 
     private static boolean checkWinner(char ch) {
+        //вынести проверку для диагоналей, строк и колон в отдельные методы
+
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] == board[i][1] &&
-                    board[i][1] == board[i][2] &&
-                    board[i][1] == ch) {
+            if (BOARD[i][0] == BOARD[i][1] &&
+                    BOARD[i][1] == BOARD[i][2] &&
+                    BOARD[i][1] == ch) {
                 return true;
             }
         }
         for (int i = 0; i < 3; i++) {
-            if (board[0][i] == board[1][i] &&
-                    board[1][i] == board[2][i] &&
-                    board[1][i] == ch) {
+            if (BOARD[0][i] == BOARD[1][i] &&
+                    BOARD[1][i] == BOARD[2][i] &&
+                    BOARD[1][i] == ch) {
                 return true;
             }
         }
-        if (board[0][0] == board[1][1] &&
-                board[1][1] == board[2][2] &&
-                board[1][1] == ch) {
+        if (BOARD[0][0] == BOARD[1][1] &&
+                BOARD[1][1] == BOARD[2][2] &&
+                BOARD[1][1] == ch) {
             return true;
-        } else if (board[2][0] == board[1][1] &&
-                board[1][1] == board[0][2] &&
-                board[1][1] == ch) {
+        } else if (BOARD[2][0] == BOARD[1][1] &&
+                BOARD[1][1] == BOARD[0][2] &&
+                BOARD[1][1] == ch) {
             return true;
         } else {
             return false;
@@ -112,7 +116,7 @@ public class TicTacToeMyGame {
     private static boolean checkDraw() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (board[i][j] == EMPTY) {
+                if (BOARD[i][j] == EMPTY) {
                     return false;
                 }
             }
@@ -121,134 +125,155 @@ public class TicTacToeMyGame {
     }
 
     private static void makeComputerProgress() {
-        int choice;
-        int[] coordinate = new int[2];
-        boolean choiceMade = false;
-
+        //сделать функцию чтобы комп пытался победить, а не просто рандомно ставил и рандом оставить
         int[] bestMove = checkCanItWin(COMPUTER);
         if (bestMove[0] != -1) {
-            choiceMade = true;
-            coordinate = bestMove;
+            BOARD[bestMove[0]][bestMove[1]] = COMPUTER;
+            return;
         }
-
-        // check if COMPUTER winning
-        //if COMPUTER can't win, try to prevent USER from winning
-
-        if (!choiceMade) {
-            bestMove = checkCanItWin(USER);
-            if (bestMove[0] != -1) {
-                choiceMade = true;
-                coordinate = bestMove;
-            }
+        //prevent USER from winning
+        bestMove = checkCanItWin(USER);
+        if (bestMove[0] != -1) {
+            BOARD[bestMove[0]][bestMove[1]] = COMPUTER;
+            return;
         }
-
-        // if we can't do winning move, do random move
-
-        if (!choiceMade) {
-            Random random = new Random();
-
-            do {
-                choice = random.nextInt(9);
-            } while (board[choice / 3][choice % 3] != ' ');
-
-            board[choice / 3][choice % 3] = COMPUTER;
-        } else {
-            board[coordinate[0]][coordinate[1]] = COMPUTER;
+        bestMove = tryToWin(COMPUTER);
+        if (bestMove[0] != -1) {
+            BOARD[bestMove[0]][bestMove[1]] = COMPUTER;
+            return;
         }
+        makeRandomComputerProgress();
     }
 
     private static int[] checkCanItWin(char ch) {
-        int row = -1;
-        int column = -1;
-
-        // check for diagonals
-        if ((board[0][0] == ch && board[2][2] == ch && board[1][1] == ' ') || (board[2][0] == ch && board[0][2] == ch && board[1][1] == ' ')) {
-            row = 1;
-            column = 1;
-        } else if (board[1][1] == ch) {
-            if (board[0][0] == ch && board[2][2] == ' ') {
-                row = 2;
-                column = 2;
-            } else if (board[2][2] == ch && board[0][0] == ' ') {
-                row = 0;
-                column = 0;
-            } else if (board[0][2] == ch && board[2][0] == ' ') {
-                row = 2;
-                column = 0;
-            } else if (board[2][0] == ch && board[0][2] == ' ') {
-                row = 0;
-                column = 2;
-            }
-        }
-
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] == ch && board[i][1] == ch && board[i][2] == ' ') {
-                // check for rows
-                row = i;
-                column = 2;
-            } else if (board[i][1] == ch && board[i][2] == ch && board[i][0] == ' ') {
-                row = i;
-                column = 0;
-            } else if (board[i][0] == ch && board[i][2] == ch && board[i][1] == ' ') {
-                row = i;
-                column = 1;
-            } else if (board[0][i] == ch && board[1][i] == ch && board[2][i] == ' ') {
-                // check for columns
-                row = 2;
-                column = i;
-            } else if (board[1][i] == ch && board[2][i] == ch && board[0][i] == ' ') {
-                row = 0;
-                column = i;
-            } else if (board[0][i] == ch && board[2][i] == ch && board[1][i] == ' ') {
-                row = 1;
-                column = i;
-            }
-        }
-
-        return new int[]{row, column};
+        return checkCanItWinDiagonals(ch);
     }
+
+    private static int[] checkCanItWinDiagonals(char ch) {
+        if ((BOARD[0][0] == ch && BOARD[2][2] == ch && BOARD[1][1] == ' ') ||
+                (BOARD[2][0] == ch && BOARD[0][2] == ch && BOARD[1][1] == ' ')) {
+            return new int[]{1, 1};
+        } else if (BOARD[1][1] == ch) {
+            if (BOARD[0][0] == ch && BOARD[2][2] == ' ') {
+                return new int[]{2, 2};
+            } else if (BOARD[2][2] == ch && BOARD[0][0] == ' ') {
+                return new int[]{0, 0};
+            } else if (BOARD[0][2] == ch && BOARD[2][0] == ' ') {
+                return new int[]{2, 0};
+            } else if (BOARD[2][0] == ch && BOARD[0][2] == ' ') {
+                return new int[]{0, 2};
+            }
+        }
+        return checkCanItWinRows(ch);
+    }
+
+    private static int[] checkCanItWinRows(char ch) {
+        for (int i = 0; i < 3; i++) {
+            if (BOARD[i][0] == ch && BOARD[i][1] == ch && BOARD[i][2] == ' ') {
+                return new int[]{i, 2};
+            } else if (BOARD[i][1] == ch && BOARD[i][2] == ch && BOARD[i][0] == ' ') {
+                return new int[]{i, 0};
+            } else if (BOARD[i][0] == ch && BOARD[i][2] == ch && BOARD[i][1] == ' ') {
+                return new int[]{i, 1};
+            }
+        }
+        return checkCanItWinCols(ch);
+    }
+
+    private static int[] checkCanItWinCols(char ch) {
+        for (int i = 0; i < 3; i++) {
+            if (BOARD[0][i] == ch && BOARD[1][i] == ch && BOARD[2][i] == ' ') {
+                return new int[]{2, i};
+            } else if (BOARD[1][i] == ch && BOARD[2][i] == ch && BOARD[0][i] == ' ') {
+                return new int[]{0, i};
+            } else if (BOARD[0][i] == ch && BOARD[2][i] == ch && BOARD[1][i] == ' ') {
+                return new int[]{1, i};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    private static int[] tryToWin(char ch) {
+        /*if (BOARD[1][1] == ch) {
+            if (BOARD[0][0] == ' ' && BOARD[2][2] == ' ') {
+                BOARD[0][0] = ch;
+            } else if (BOARD[2][0] == ' ' && BOARD[0][2] == ' ') {
+                BOARD[2][0] = ch;
+            } else if (BOARD[1][0] == ' ' && BOARD[1][2] == ' ') {
+                BOARD[1][0] = ch;
+            } else if (BOARD[0][1] == ' ' && BOARD[2][1] == ' ') {
+                BOARD[0][1] = ch;
+            }
+        }*/
+        int[][] availableSpots = emptyIndexes();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(availableSpots[i][j] == 1)
+                return new int[] {i, j};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    private static int[][] emptyIndexes() {
+        int[][] empties = new int[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (BOARD[i][j] == ' ') {
+                    empties[i][j] = 1;
+                } else {
+                    empties[i][j] = 0;
+                }
+            }
+        }
+        return empties;
+    }
+
+
+    private static void makeRandomComputerProgress() {
+        Random random = new Random();
+        int choice;
+        do {
+            choice = random.nextInt(9);
+        } while (BOARD[choice / 3][choice % 3] != ' ');
+        BOARD[choice / 3][choice % 3] = COMPUTER;
+    }
+
 
     private static boolean isCellFree(int number) {
         int[] indexes = toIndexes(number);
 
         var row = indexes[0];
         var col = indexes[1];
-        return board[row][col] == EMPTY;
+        return BOARD[row][col] == EMPTY;
     }
 
     private static void makeUserProgress(int number) {
-        updateGameBoard(number, USER);
+        updateGameBoard(number);
     }
 
-    private static void updateGameBoard(int number, char ch) {
+    private static void updateGameBoard(int number) {
         var indexes = toIndexes(number);
-        board[indexes[0]][indexes[1]] = ch;
+        BOARD[indexes[0]][indexes[1]] = USER;
     }
 
     private static int[] toIndexes(int number) {
-        if (number == 1) {
-            return new int[]{2, 0};
-        } else if (number == 2) {
-            return new int[]{2, 1};
-        } else if (number == 3) {
-            return new int[]{2, 2};
-        } else if (number == 4) {
-            return new int[]{1, 0};
-        } else if (number == 5) {
-            return new int[]{1, 1};
-        } else if (number == 6) {
-            return new int[]{1, 2};
-        } else if (number == 7) {
-            return new int[]{0, 0};
-        } else if (number == 8) {
-            return new int[]{0, 1};
-        } else {
-            return new int[]{0, 2};
-        }
+        int[][] values = {
+                {2, 0},
+                {2, 1},
+                {2, 2},
+                {1, 0},
+                {1, 1},
+                {1, 2},
+                {0, 0},
+                {0, 1},
+                {0, 2}
+        };
+        return values[number - 1];
     }
 
     private static void printGameBoard() {
-        buildGameBoard(board);
+        buildGameBoard(BOARD);
     }
 
     private static void buildGameBoard(char[][] data) {
