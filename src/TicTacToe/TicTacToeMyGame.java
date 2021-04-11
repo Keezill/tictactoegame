@@ -189,39 +189,47 @@ public class TicTacToeMyGame {
     }
 
     private static int[] tryToWin(char ch) {
-        /*if (BOARD[1][1] == ch) {
-            if (BOARD[0][0] == ' ' && BOARD[2][2] == ' ') {
-                BOARD[0][0] = ch;
-            } else if (BOARD[2][0] == ' ' && BOARD[0][2] == ' ') {
-                BOARD[2][0] = ch;
-            } else if (BOARD[1][0] == ' ' && BOARD[1][2] == ' ') {
-                BOARD[1][0] = ch;
-            } else if (BOARD[0][1] == ' ' && BOARD[2][1] == ' ') {
-                BOARD[0][1] = ch;
-            }
-        }*/
-        int[][] availableSpots = emptyIndexes();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if(availableSpots[i][j] == 1)
-                return new int[] {i, j};
+                if (BOARD[i][j] == ch) {
+                    int[][] candidates = getCandidates(i, j);
+                    for (int[] candidate : candidates) {
+                        if (BOARD[candidate[0]][candidate[1]] == EMPTY) {
+                            return new int[]{candidate[0], candidate[1]};
+                        }
+                    }
+                }
             }
         }
         return new int[]{-1, -1};
     }
 
-    private static int[][] emptyIndexes() {
-        int[][] empties = new int[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (BOARD[i][j] == ' ') {
-                    empties[i][j] = 1;
-                } else {
-                    empties[i][j] = 0;
-                }
+    private static int[][] getCandidates(int i, int j) {
+        if (i == 0) {
+            if (j == 0) {
+                return new int[][]{{0, 1}, {1, 1}, {1, 0}};
+            } else if (j == 1) {
+                return new int[][]{{0, 2}, {1, 1}, {0, 0}};
+            } else {
+                return new int[][]{{1, 2}, {1, 1}, {0, 1}};
+            }
+        } else if (i == 1) {
+            if (j == 0) {
+                return new int[][]{{0, 0}, {1, 1}, {2, 0}};
+            } else if (j == 1) {
+                return new int[][]{{0, 1}, {0, 2}, {1, 2}, {2, 2}, {2, 1}, {2, 0}, {1, 0}, {0, 0}};
+            } else {
+                return new int[][]{{2, 2}, {1, 1}, {0, 2}};
+            }
+        } else {
+            if (j == 0) {
+                return new int[][]{{1, 0}, {1, 1}, {2, 1}};
+            } else if (j == 1) {
+                return new int[][]{{1, 1}, {2, 2}, {2, 0}};
+            } else {
+                return new int[][]{{1, 2}, {2, 1}, {1, 1}};
             }
         }
-        return empties;
     }
 
 
